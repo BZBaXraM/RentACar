@@ -11,7 +11,7 @@ public sealed class AppContext : DbContext
     public AppContext()
     {
         // Database.EnsureDeleted();
-        Database.EnsureCreated();
+        Database.EnsureCreatedAsync();
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -2,8 +2,8 @@ namespace RentaCar;
 
 public interface INewCar
 {
-    void AddNewCar();
-    void SearchInfo();
-    void DeleteInfo();
-    void RentalCar();
+    Task AddNewCar();
+    Task SearchInfo();
+    Task DeleteInfo();
+    Task RentalCar();
 }

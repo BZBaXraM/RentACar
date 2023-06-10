@@ -2,6 +2,6 @@ namespace RentaCar;
 
 public interface IAccount
 {
-    void Registration();
-    void Login();
+    Task Registration();
+    Task Login();
 }

@@ -6,7 +6,7 @@ public class Addition : INewCar, IAccount
     private readonly Account _account = new();
     private readonly Rental _rental = new();
 
-    private void Menu()
+    private async Task Menu()
     {
         while (true)
         {
@@ -20,16 +20,16 @@ public class Addition : INewCar, IAccount
             switch (select)
             {
                 case 1:
-                    AddNewCar();
+                    await AddNewCar();
                     break;
                 case 2:
-                    SearchInfo();
+                    await SearchInfo();
                     break;
                 case 3:
-                    DeleteInfo();
+                    await DeleteInfo();
                     break;
                 case 4:
-                    RentalCar();
+                    await RentalCar();
                     break;
                 case 5:
                     Environment.Exit(0);
@@ -41,9 +41,9 @@ public class Addition : INewCar, IAccount
         }
     }
 
-    public void Registration()
+    public async Task Registration()
     {
-        using AppContext context = new AppContext();
+        await using AppContext context = new();
 
         Console.Write("Введите имя: ");
         var name = Console.ReadLine();
@@ -54,20 +54,21 @@ public class Addition : INewCar, IAccount
         Console.Write("Введите новый пароль: ");
         var password = Console.ReadLine();
         Console.Clear();
-        Thread.Sleep(500);
+        // Thread.Sleep(500);
+        await Task.Delay(500);
         Console.WriteLine("Регистрация произошла успешно! ");
 
         _account.Name = name;
         _account.Surname = surname;
         _account.Login = login;
         _account.Password = password;
-        context.Add(_account);
-        context.SaveChanges();
+        await context.AddRangeAsync(_account);
+        await context.SaveChangesAsync();
     }
 
-    public void Login()
+    public async Task Login()
     {
-        using AppContext context = new AppContext();
+        await using AppContext context = new();
 
         Console.Clear();
         Console.Write("Введите логин: ");
@@ -80,8 +81,8 @@ public class Addition : INewCar, IAccount
         {
             Console.WriteLine("Добро пожаловать на Rent a Car от Бахы!");
             Console.WriteLine();
-            Thread.Sleep(500);
-            Menu();
+            await Task.Delay(500);
+            await Menu();
         }
         else
         {
@@ -89,9 +90,9 @@ public class Addition : INewCar, IAccount
         }
     }
 
-    public void AddNewCar()
+    public async Task AddNewCar()
     {
-        using AppContext context = new AppContext();
+        await using AppContext context = new();
 
         Console.Write("Add Brand: ");
         var addBrand = Console.ReadLine();
@@ -113,13 +114,13 @@ public class Addition : INewCar, IAccount
         _car.Model = addModel;
         _car.Price = addPrice;
         // _car.RentalDate = addRentalDate;
-        context.Add(_car);
-        context.SaveChanges();
+        await context.AddAsync(_car);
+        await context.SaveChangesAsync();
     }
 
-    public void SearchInfo()
+    public async Task SearchInfo()
     {
-        using AppContext context = new AppContext();
+        await using AppContext context = new();
 
         Console.Clear();
         Console.Write("Введите название бренда: ");
@@ -128,16 +129,16 @@ public class Addition : INewCar, IAccount
         var cnt = context.Cars?.Where(x => x.Brand == search);
         foreach (var item in cnt!)
         {
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
             Console.WriteLine($"Id: {item.Id} {item.Brand} {item.Model}");
         }
         //Console.WriteLine(cnt is null ? "Ошибка!" : $"Id {cnt.Id} Названия бренда: {cnt.Brand}");
     }
 
-    public void DeleteInfo()
+    public async Task DeleteInfo()
     {
         Console.Clear();
-        using AppContext context = new AppContext();
+        await using AppContext context = new AppContext();
 
         var cnt = context.Cars?.ToList();
         foreach (var item in cnt!)
@@ -154,7 +155,7 @@ public class Addition : INewCar, IAccount
         Console.WriteLine(cntTwo is null
             ? "Ошибка!"
             : $"{context.Cars?.Remove(cntTwo)} Id: {cntTwo.Id} с называнием {cntTwo.Brand} и моделем {cntTwo.Model} удалено!");
-        context.SaveChanges();
+        await context.SaveChangesAsync();
         Console.WriteLine();
 
         Console.WriteLine("Оставшееся машины в БД: ");
@@ -167,10 +168,10 @@ public class Addition : INewCar, IAccount
         Console.WriteLine();
     }
 
-    public void RentalCar()
+    public async Task RentalCar()
     {
         Console.Clear();
-        using AppContext context = new AppContext();
+        await using AppContext context = new AppContext();
 
         var cnt = context.Cars?.ToList();
         foreach (var item in cnt!)
@@ -190,8 +191,11 @@ public class Addition : INewCar, IAccount
         // _car.Brand = _rental.Brand;
         _rental.RentalDate = rentalDate;
 
-        context?.Add(_rental);
-        context?.SaveChanges();
+        if (context != null)
+        {
+            await context.AddAsync(_rental);
+            await context.SaveChangesAsync()!;
+        }
 
         foreach (var item in cntTwo!)
         {
